@@ -6,8 +6,9 @@ canvas.height = 500;
 
 let score = 0;
 let gameFrame = 0;
-ctx.font = '50px Georgia';
+ctx.font = '40px Georgia';
 let gameSpeed = 1;
+let gameOver = false;
 
 //Mouse interactivity
 let canvasPosition = canvas.getBoundingClientRect();
@@ -66,10 +67,6 @@ class Player {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
         }
-        ctx.fillStyle = 'red';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
         ctx.closePath();
         ctx.fillRect(this.x, this.y, this.radius, 10);
 
@@ -194,10 +191,6 @@ class Enemy{
         this.spriteHeight = 397;
     }
     draw(){
-        ctx.fillStyle = 'red';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
         ctx.drawImage(enemyImage, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, this.x - 60, this.y - 70, this.spriteWidth / 3, this.spriteHeight / 3)
     }
     update(){
@@ -209,28 +202,29 @@ class Enemy{
         }
         if(gameFrame % 5 == 0){
             this.frame++;
-            /*if(this.frame >= 12) this.frame = 0;
-            if(this.frame == 3 || this.frame == 7 || this.frame == 11){
-                this.frameX = 0;
-            } else {
-                this.frameX++;
-            }
-            if(this.frame < 3) this.frameY = 0;
-            else if(this.frame < 7) this.frameY = 1;
-            else if(this.frame < 11) this.frameY = 2;
-            else this.frameY = 0;*/
-
-            //these 2 lines do the same as above
             this.frameX = this.frame % 4;
             // "| 0" is the same as writing Math.floor(this.frame % 12 / 4)
             this.frameY = (this.frame % 12 / 4) | 0; 
+        }
+        //collision with player
+        const distanceX = this.x - player.x;
+        const distanceY = this.y - player.y;
+        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        if(distance < this.radius + player.radius){
+            handleGameOver();
         }
     }
 }
 const enemy1 = new Enemy();
 function handleEnemies(){
-    enemy1.update();
     enemy1.draw();
+    enemy1.update();
+}
+
+function handleGameOver(){
+    ctx.fillStyle = 'white';
+    ctx.fillText('GAME OVER, you reached score ' + score, 120, 250);
+    gameOver = true;
 }
 
 //Animation loop
@@ -244,7 +238,7 @@ function animate(){
     ctx.fillStyle = 'black';
     ctx.fillText('score: ' + score, 10, 50);
     gameFrame++;
-    requestAnimationFrame(animate);
+    if(!gameOver) requestAnimationFrame(animate);
 }
 
 animate();
