@@ -367,7 +367,7 @@ function handlePlayerBlink(){
         if(gameFrame > gameFrameCatch + 10){
             gameFrameCatch += 20;
         }
-        //player invincibility
+        //player invincibilit
         enemy1.radius = -60;
         enemy2.radius = -60;
     } else {
