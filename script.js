@@ -37,6 +37,7 @@ playerRight.src = 'images/player_swim_right.png';
 
 class Player {
     constructor(){
+        this.lives = 3;
         this.x = canvas.width/2;
         this.y = canvas.height/2;
         this.radius = 50;
@@ -81,7 +82,6 @@ class Player {
             ctx.drawImage(playerRight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, 0 - 60, 0 - 45, this.spriteWidth/4, this.spriteHeight/4);
         }
         ctx.restore();
-        
     }
 }
 
@@ -109,12 +109,6 @@ class Bubble{
         this.distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
     }
     draw(){
-        /*ctx.fillStyle = 'blue';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.closePath();
-        ctx.stroke();*/
         ctx.drawImage(bubbleImage, this.x - 65, this.y -65, this.radius * 2.6, this.radius * 2.6);
     }
 }
@@ -211,7 +205,10 @@ class Enemy{
         const distanceY = this.y - player.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
-            handleGameOver();
+            handlePlayerLives();
+            this.x = canvas.width + 500;
+            this.y = Math.random() * (canvas.height - 90);
+            this.speed = Math.random() * 2 + 2;
         }
     }
 }
@@ -221,28 +218,62 @@ function handleEnemies(){
     enemy1.update();
 }
 
-function handleGameOver(){
-    ctx.fillStyle = 'white';
-    ctx.fillText('GAME OVER, you reached score ' + score, 120, 250);
-    gameOver = true;
-}
-
 //Animation loop
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     handleBubbles();
     handleBackground();
-    handleEnemies();
-    player.update();
     player.draw();
+    player.update();
+    handleEnemies();
     ctx.fillStyle = 'black';
-    ctx.fillText('score: ' + score, 10, 50);
+    ctx.fillText('lives: ' + player.lives, 10, 50);
+    ctx.fillText('score: ' + score, 10, 100);
     gameFrame++;
-    if(!gameOver) requestAnimationFrame(animate);
+    if(!gameOver){
+        requestAnimationFrame(animate);
+    } else {
+        console.log("done");
+    }
+    if(!player.lives){
+        handleGameOver();
+    }
 }
 
+//startGame();
 animate();
 
 window.addEventListener('resize', function (){
     canvasPosition = canvas.getBoundingClientRect();
 });
+
+
+/////////////////////////////////////////////////////////////////////
+//tutorial completed above --- self added features below
+
+let highScore = [];
+
+function handleGameOver(){
+    highScore.push(score);
+    ctx.fillStyle = 'white';
+    ctx.fillText('GAME OVER, you reached score ' + score, 120, 250);
+    ctx.fillText('High Score: ' + Math.max(...highScore), 120, 300);
+    gameOver = true;
+}
+
+/*function resetToDefault(){
+
+}*/
+
+/*function startGame(){
+    if(Math.max(...highScore) == 0){
+        //button saying "start game"
+        return requestAnimationFrame(animate);
+    } else if (player.lives == 0){
+        handleGameOver();
+    }
+}*/
+
+function handlePlayerLives(){
+    player.lives--;
+}
