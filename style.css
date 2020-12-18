@@ -179,6 +179,12 @@ button::before {
 }
 
 .colorOptions img{
-    border: 5px solid pink;
+
     width: 100%;
+    height: 100%;
+}
+
+h1{
+    width: 100%;
+    text-align: center;
 }

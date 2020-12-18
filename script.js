@@ -31,9 +31,9 @@ canvas.addEventListener('mouseup', function(event){
 
 //Player
 const playerLeft = new Image();
-playerLeft.src = 'images/userModels/green_left.png';
+playerLeft.src = 'images/userModels/black_left.png';
 const playerRight = new Image();
-playerRight.src = 'images/userModels/blue_right.png';
+playerRight.src = 'images/userModels/black_right.png';
 
 class Player {
     constructor(){
@@ -274,7 +274,7 @@ function animate(){
     drawLives();
     handleBubbles();
     //handleBackground();
-    //instructions();
+    instructions();
     ctx.fillStyle = 'white';
     ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
     player.draw();
@@ -333,6 +333,45 @@ function handleClose(e){
     settingsPage.style.zIndex = "-1";
 }
 
+let blackFish = document.getElementById("black");
+let yellowFish = document.getElementById("yellow");
+let purpleFish = document.getElementById("purple");
+let redFish = document.getElementById("red");
+let greenFish = document.getElementById("green");
+let blueFish = document.getElementById("blue");
+
+blackFish.addEventListener("click", handleBlackChoice);
+yellowFish.addEventListener("click", handleYellowChoice);
+purpleFish.addEventListener("click", handlePurpleChoice);
+redFish.addEventListener("click", handleRedChoice);
+greenFish.addEventListener("click", handleGreenChoice);
+blueFish.addEventListener("click", handleBlueChoice);
+
+function handleBlackChoice(e){
+    playerLeft.src = 'images/userModels/black_left.png';
+    playerRight.src = 'images/userModels/black_right.png';
+}
+function handleYellowChoice(e){
+    playerLeft.src = 'images/userModels/yellow_left.png';
+    playerRight.src = 'images/userModels/yellow_right.png';
+}
+function handlePurpleChoice(e){
+    playerLeft.src = 'images/userModels/purple_left.png';
+    playerRight.src = 'images/userModels/purple_right.png';
+}
+function handleRedChoice(e){
+    playerLeft.src = 'images/userModels/red_left.png';
+    playerRight.src = 'images/userModels/red_right.png';
+}
+function handleGreenChoice(e){
+    playerLeft.src = 'images/userModels/green_left.png';
+    playerRight.src = 'images/userModels/green_right.png';
+}
+function handleBlueChoice(e){
+    playerLeft.src = 'images/userModels/blue_left.png';
+    playerRight.src = 'images/userModels/blue_right.png';
+}
+
 let staticBackground = new Image();
 staticBackground.src = 'images/backgroundStatic.jpg';
 let livesImage = new Image();
@@ -383,7 +422,6 @@ function handleDamage(){
 
 function handlePlayerBlink(){
     if(gameFrame < playerBlink){
-        console.log(gameFrame, gameFrameCatch);
         if(gameFrame < gameFrameCatch){
             player.frameX = -1;
             player.frameY = -1;
