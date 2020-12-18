@@ -274,8 +274,8 @@ function animate(){
     drawLives();
     handleBubbles();
     //handleBackground();
+    instructions();
     ctx.fillStyle = 'white';
-    ctx.fillText(score, 500, 175);
     ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
     player.draw();
     player.update();
@@ -328,6 +328,16 @@ function handleScore(){
     }
 }
 
+function instructions(){
+    if(gameFrame < 500){
+        ctx.fillStyle = 'black';
+        ctx.fillText("Collect as many bubbles as possible", 200, 300);
+        ctx.fillText("(Careful of other fish!)", 315, 350);
+    } else {
+        ctx.fillText(score, 500, 175);
+    }
+}
+
 function drawLives(){
     if(player.lives == 3){
         ctx.drawImage(livesImage, 775, 575, 75, 75);
@@ -367,7 +377,7 @@ function handlePlayerBlink(){
         if(gameFrame > gameFrameCatch + 10){
             gameFrameCatch += 20;
         }
-        //player invincibilit
+        //player invincibility
         enemy1.radius = -60;
         enemy2.radius = -60;
     } else {
@@ -394,6 +404,9 @@ function handleGameOver(){
 
 function resetToDefault(){
     score = 0;
+    gameFrame = 0;
+    gameFrameCatch = 0;
+    playerBlink = 0;
     player.lives = 3;
     mouse.x = canvas.width/2;
     mouse.y = canvas.height/2;
