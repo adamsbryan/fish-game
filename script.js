@@ -12,7 +12,6 @@ let gameOver = false;
 
 //Mouse interactivity
 let canvasPosition = canvas.getBoundingClientRect();
-console.log(canvasPosition);
 
 const mouse = {
     x: canvas.width/2,
@@ -59,6 +58,11 @@ class Player {
         }
         if(mouse.y != this.y) {
             this.y -= distanceY/30;
+        }
+        if(gameFrame % 6 == 0){
+            this.frame++;
+            this.frameX = this.frame % 4;
+            this.frameY = (this.frame % 12 / 4) | 0; 
         }
     }
     draw(){
@@ -205,7 +209,7 @@ class Enemy1{
         const distanceY = this.y - player.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
-            player.lives--;
+            handleDamage();
             this.x = canvas.width + 500;
             this.y = Math.random() * (canvas.height - 90);
             this.speed = Math.random() * 2 + 2;
@@ -246,8 +250,8 @@ class Enemy2{
         const distanceY = this.y - player.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
-            player.lives--;
-            this.x =  -500;
+            handleDamage();
+            this.x = -500;
             this.y = Math.random() * (canvas.height - 90);
             this.speed = Math.random() * 2 + 2;
         }
@@ -276,6 +280,7 @@ function animate(){
     player.draw();
     player.update();
     handleEnemies();
+    handlePlayerBlink();
     gameFrame++;
     if(!gameOver){
         requestAnimationFrame(animate);
@@ -338,6 +343,39 @@ function drawLives(){
     }
 }
 
+let playerBlink = 0;
+let gameFrameCatch = 0;
+
+function handleDamage(){
+    player.lives--;
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, 1000, 650);
+    gameFrameCatch = gameFrame;
+    playerBlink = gameFrameCatch + 150;
+}
+
+function handlePlayerBlink(){
+    if(gameFrame < playerBlink){
+        console.log(gameFrame, gameFrameCatch);
+        if(gameFrame < gameFrameCatch){
+            player.frameX = -1;
+            player.frameY = -1;
+        } else {
+            player.frameX = 1;
+            player.frameY = 1;
+        }
+        if(gameFrame > gameFrameCatch + 10){
+            gameFrameCatch += 20;
+        }
+        //player invincibility
+        enemy1.radius = -60;
+        enemy2.radius = -60;
+    } else {
+        enemy1.radius = 60;
+        enemy2.radius = 60;
+    }
+}
+
 function handleGameOver(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
@@ -349,7 +387,7 @@ function handleGameOver(){
         ctx.fillText('NEW HIGH SCORE: ' + score, 300, 225)
     } else {
         ctx.fillStyle = 'black';
-        ctx.fillText('score: ' + score, 430, 210);
+        ctx.fillText('SCORE: ' + score, 415, 210);
     }
     highScore.push(score);
 }
