@@ -88,7 +88,7 @@ class Player {
 const player = new Player();
 
 //Bubbles
-const bubblesArray = [];
+let bubblesArray = [];
 const bubbleImage = new Image();
 bubbleImage.src = 'images/bubble_pop_frame_01.png';
 
@@ -205,7 +205,7 @@ class Enemy{
         const distanceY = this.y - player.y;
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
-            handlePlayerLives();
+            player.lives--;
             this.x = canvas.width + 500;
             this.y = Math.random() * (canvas.height - 90);
             this.speed = Math.random() * 2 + 2;
@@ -233,15 +233,15 @@ function animate(){
     if(!gameOver){
         requestAnimationFrame(animate);
     } else {
-        console.log("done");
+        //play again button
+        //reset to defaults
+        playAgainButton.style.zIndex = '1';
+        resetToDefault();
     }
     if(!player.lives){
         handleGameOver();
     }
 }
-
-//startGame();
-animate();
 
 window.addEventListener('resize', function (){
     canvasPosition = canvas.getBoundingClientRect();
@@ -252,6 +252,19 @@ window.addEventListener('resize', function (){
 //tutorial completed above --- self added features below
 
 let highScore = [];
+let startButton = document.getElementById("startButton");
+let playAgainButton = document.getElementById("playAgain");
+
+playAgainButton.style.zIndex = '-1';
+startButton.addEventListener("click", handleButtons);
+playAgainButton.addEventListener("click", handleButtons);
+
+function handleButtons(e){
+    startButton.style.zIndex = '-1';
+    playAgainButton.style.zIndex = '-1';
+    gameOver = false;
+    animate();
+}
 
 function handleGameOver(){
     highScore.push(score);
@@ -261,19 +274,15 @@ function handleGameOver(){
     gameOver = true;
 }
 
-/*function resetToDefault(){
-
-}*/
-
-/*function startGame(){
-    if(Math.max(...highScore) == 0){
-        //button saying "start game"
-        return requestAnimationFrame(animate);
-    } else if (player.lives == 0){
-        handleGameOver();
-    }
-}*/
-
-function handlePlayerLives(){
-    player.lives--;
+function resetToDefault(){
+    score = 0;
+    player.lives = 3;
+    mouse.x = canvas.width/2;
+    mouse.y = canvas.height/2;
+    player.x = canvas.width/2;
+    player.y = canvas.height/2;
+    enemy1.x = canvas.width + 200;
+    enemy1.y = Math.random() * (canvas.height - 90);
+    enemy1.speed = Math.random() * 2 + 2;
+    bubblesArray = [];
 }
