@@ -27,11 +27,13 @@ button{
     font-family: Georgia;
     position: absolute;
     z-index: 2;
-    top: x;
-    left: y;
 }
 
+.again{
+    position: absolute;
+    width: 200px;
+    height: 100px;
+}
 #playAgain{
-    top: x;
-    left: y -200;
+    margin-top: 50px;
 }

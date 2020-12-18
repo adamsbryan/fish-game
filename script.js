@@ -68,9 +68,7 @@ class Player {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
         }
-        ctx.closePath();
-        ctx.fillRect(this.x, this.y, this.radius, 10);
-
+        //ctx.closePath();
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle)
@@ -136,7 +134,7 @@ function handleBubbles(){
                 } else {
                     bubblePop2.play();
                 }
-                score++;
+                handleScore();
                 bubblesArray[i].counted = true;
                 bubblesArray.splice(i, 1);
                 i--;
@@ -223,23 +221,23 @@ function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     handleBubbles();
     handleBackground();
+    ctx.fillText(score, 400, 125);
+    ctx.fillText('BEST: ' + Math.max(...highScore), 10, 475);
     player.draw();
     player.update();
     handleEnemies();
-    ctx.fillStyle = 'black';
-    ctx.fillText('lives: ' + player.lives, 10, 50);
-    ctx.fillText('score: ' + score, 10, 100);
+    ctx.fillStyle = 'white';
+    ctx.fillText('LIVES: ' + player.lives, 600, 475);
     gameFrame++;
     if(!gameOver){
         requestAnimationFrame(animate);
     } else {
-        //play again button
-        //reset to defaults
+        handleGameOver();
         playAgainButton.style.zIndex = '1';
         resetToDefault();
     }
     if(!player.lives){
-        handleGameOver();
+        gameOver = true;
     }
 }
 
@@ -251,7 +249,7 @@ window.addEventListener('resize', function (){
 /////////////////////////////////////////////////////////////////////
 //tutorial completed above --- self added features below
 
-let highScore = [];
+let highScore = [0];
 let startButton = document.getElementById("startButton");
 let playAgainButton = document.getElementById("playAgain");
 
@@ -266,12 +264,26 @@ function handleButtons(e){
     animate();
 }
 
+function handleScore(){
+    score++;
+    if(score > Math.max(...highScore)){
+        highScore[0] = score;
+    }
+}
+
 function handleGameOver(){
-    highScore.push(score);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'white';
-    ctx.fillText('GAME OVER, you reached score ' + score, 120, 250);
-    ctx.fillText('High Score: ' + Math.max(...highScore), 120, 300);
-    gameOver = true;
+    ctx.font = '60px Georgia';
+    ctx.fillText('GAME OVER', 225, 100);
+    ctx.font = '40px Georgia';
+    if(score >= Math.max(...highScore)){
+        ctx.fillStyle = 'magenta';
+        ctx.fillText('NEW HIGH SCORE: ' + score, 205, 180)
+    } else {
+        ctx.fillText('score: ' + score, 320, 160);
+    }
+    highScore.push(score);
 }
 
 function resetToDefault(){
