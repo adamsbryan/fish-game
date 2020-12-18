@@ -13,10 +13,10 @@ body{
 }
 
 #canvas1{
-    width: 800px;
-    height: 500px;
+    width: 1000px;
+    height: 650px;
     border: 4px solid black;
-    background: linear-gradient(to bottom, lightblue, blue, black);
+    background: linear-gradient(to bottom, #4fdcff, #00bdec, #002028);
 }
 
 button{
