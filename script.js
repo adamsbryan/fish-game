@@ -31,9 +31,9 @@ canvas.addEventListener('mouseup', function(event){
 
 //Player
 const playerLeft = new Image();
-playerLeft.src = 'images/player_swim_left.png';
+playerLeft.src = 'images/userModels/green_left.png';
 const playerRight = new Image();
-playerRight.src = 'images/player_swim_right.png';
+playerRight.src = 'images/userModels/blue_right.png';
 
 class Player {
     constructor(){
@@ -274,7 +274,7 @@ function animate(){
     drawLives();
     handleBubbles();
     //handleBackground();
-    instructions();
+    //instructions();
     ctx.fillStyle = 'white';
     ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
     player.draw();
@@ -286,7 +286,8 @@ function animate(){
         requestAnimationFrame(animate);
     } else {
         handleGameOver();
-        playAgainButton.style.zIndex = '1';
+        playAgainButton.style.zIndex = '2';
+        settingsContainer.style.zIndex = '1';
         resetToDefault();
     }
     if(!player.lives){
@@ -312,8 +313,24 @@ playAgainButton.addEventListener("click", handleButtons);
 function handleButtons(e){
     startButton.style.zIndex = '-1';
     playAgainButton.style.zIndex = '-1';
+    settingsContainer.style.zIndex = '-1';
     gameOver = false;
     animate();
+}
+let settingsButton = document.getElementById("settingsButton");
+let settingsContainer = document.getElementsByClassName("settingsContainer")[0];
+let settingsPage = document.getElementById("settings");
+let closeSettings = document.getElementsByClassName("close")[0];
+
+settingsButton.addEventListener("click", handleSettings);
+closeSettings.addEventListener("click", handleClose);
+
+function handleSettings(e){
+    settingsPage.style.zIndex = "3";
+}
+
+function handleClose(e){
+    settingsPage.style.zIndex = "-1";
 }
 
 let staticBackground = new Image();
