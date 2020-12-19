@@ -372,11 +372,10 @@ function removeBorder(colorArray, color){
 //Music
 const calmMusic = document.createElement("audio");
 calmMusic.src = "sounds/calmMusic.wav";
+const hardMusic = document.createElement("audio");
+hardMusic.src = "sounds/hardMode.wav";
 
 function handleMusic(){
-    /*if(!calmMusic.play()){
-        calmMusic.play();
-    }*/
     calmMusic.play();
     calmMusic.loop = true;
 }
@@ -398,14 +397,26 @@ function handleScore(){
         difficultyIncrease = true;
         message = gameFrame + 150;
         calmMusic.muted = true;
+        hardMusic.play();
+        hardMusic.loop = true;
+        hardMusic.muted = false;
     }
 }
+
+const enemy3 = new Enemy1();
+const enemyImage3 = new Image();
+enemyImage3.src = 'images/enemy3.png';
 
 function handleDifficulty(){
     if(message > gameFrame){
         ctx.fillStyle = 'red';
         ctx.font = '60px Georgia';
-        ctx.fillText("DIFFICULTY INCREASED", 250, 300);
+        ctx.fillText("DIFFICULTY INCREASED", 200, 300);
+    }
+    if(difficultyIncrease){
+        enemy3.update();
+        enemy3.speed = Math.random() * 5 + 2;
+        ctx.drawImage(enemyImage3, enemy3.frameX * enemy3.spriteWidth, enemy3.frameY * enemy3.spriteHeight, enemy3.spriteWidth, enemy3.spriteHeight, enemy3.x - 60, enemy3.y - 70, enemy3.spriteWidth / 3, enemy3.spriteHeight / 3)
     }
 }
 
@@ -442,9 +453,12 @@ function drawLives(){
 
 let playerBlink = 0;
 let gameFrameCatch = 0;
+let damage = document.createElement("audio");
+damage.src = 'sounds/damage.flac';
 
 function handleDamage(){
     player.lives--;
+    damage.play();
     ctx.fillStyle = 'red';
     ctx.fillRect(0, 0, 1000, 650);
     gameFrameCatch = gameFrame;
@@ -476,6 +490,7 @@ function handlePlayerBlink(){
 function handleGameOver(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     calmMusic.muted = false;
+    hardMusic.muted = true;
     ctx.fillStyle = 'white';
     ctx.font = '80px Georgia';
     ctx.fillText('GAME OVER', 275, 150);
@@ -494,8 +509,10 @@ function resetToDefault(){
     score = 0;
     gameFrame = 0;
     gameFrameCatch = 0;
+    message = 0;
     playerBlink = 0;
     player.lives = 3;
+    difficultyIncrease = false;
     mouse.x = canvas.width/2;
     mouse.y = canvas.height/2;
     player.x = canvas.width/2;
