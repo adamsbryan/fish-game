@@ -276,11 +276,13 @@ function animate(){
     //handleBackground();
     instructions();
     ctx.fillStyle = 'white';
+    ctx.font = '40px Georgia';
     ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
     player.draw();
     player.update();
     handleEnemies();
     handlePlayerBlink();
+    handleDifficulty();
     gameFrame++;
     if(!gameOver){
         requestAnimationFrame(animate);
@@ -303,18 +305,21 @@ window.addEventListener('resize', function (){
 //tutorial completed above --- self added features below
 
 let highScore = [0];
+
+//Buttons
 let startButton = document.getElementById("startButton");
 let playAgainButton = document.getElementById("playAgain");
 
 playAgainButton.style.zIndex = '-1';
-startButton.addEventListener("click", handleButtons);
-playAgainButton.addEventListener("click", handleButtons);
+startButton.addEventListener("click", startGame);
+playAgainButton.addEventListener("click", startGame);
 
-function handleButtons(e){
+function startGame(e){
     startButton.style.zIndex = '-1';
     playAgainButton.style.zIndex = '-1';
     settingsContainer.style.zIndex = '-1';
     gameOver = false;
+    handleMusic();
     animate();
 }
 let settingsButton = document.getElementById("settingsButton");
@@ -341,67 +346,66 @@ let greenFish = document.getElementById("green");
 let blueFish = document.getElementById("blue");
 let colorArray = [blackFish, yellowFish, purpleFish, redFish, greenFish, blueFish];
 
-blackFish.addEventListener("click", handleBlackChoice);
-yellowFish.addEventListener("click", handleYellowChoice);
-purpleFish.addEventListener("click", handlePurpleChoice);
-redFish.addEventListener("click", handleRedChoice);
-greenFish.addEventListener("click", handleGreenChoice);
-blueFish.addEventListener("click", handleBlueChoice);
+for(let i=0; i<colorArray.length; i++){
+    colorArray[i].addEventListener("click", handleColorChoice);
+}
+
+function handleColorChoice(e){
+    for(let i=0; i<colorArray.length; i++){
+        if(colorArray[i].id == e.path[0].id){
+            playerLeft.src = `images/userModels/${e.path[0].id}_left.png`;
+            playerRight.src = `images/userModels/${e.path[0].id}_right.png`;
+            colorArray[i].style.border = '3px solid red';
+            removeBorder(colorArray, i);
+        }
+    }
+}
 
 function removeBorder(colorArray, color){
-    for(let i=0; i < colorArray.length; i++){
+    for(let i=0; i<colorArray.length; i++){
         if(i != color){
             colorArray[i].style.border = "";
         }
     }
 }
 
-function handleBlackChoice(e){
-    playerLeft.src = 'images/userModels/black_left.png';
-    playerRight.src = 'images/userModels/black_right.png';
-    blackFish.style.border = "3px solid red";
-    removeBorder(colorArray, 0);
-}
-function handleYellowChoice(e){
-    playerLeft.src = 'images/userModels/yellow_left.png';
-    playerRight.src = 'images/userModels/yellow_right.png';
-    yellowFish.style.border = "3px solid red";
-    removeBorder(colorArray, 1);
-}
-function handlePurpleChoice(e){
-    playerLeft.src = 'images/userModels/purple_left.png';
-    playerRight.src = 'images/userModels/purple_right.png';
-    purpleFish.style.border = "3px solid red";
-    removeBorder(colorArray, 2);
-}
-function handleRedChoice(e){
-    playerLeft.src = 'images/userModels/red_left.png';
-    playerRight.src = 'images/userModels/red_right.png';
-    redFish.style.border = "3px solid red";
-    removeBorder(colorArray, 3);
-}
-function handleGreenChoice(e){
-    playerLeft.src = 'images/userModels/green_left.png';
-    playerRight.src = 'images/userModels/green_right.png';
-    greenFish.style.border = "3px solid red";
-    removeBorder(colorArray, 4);
-}
-function handleBlueChoice(e){
-    playerLeft.src = 'images/userModels/blue_left.png';
-    playerRight.src = 'images/userModels/blue_right.png';
-    blueFish.style.border = "3px solid red";
-    removeBorder(colorArray, 5);
+//Music
+const calmMusic = document.createElement("audio");
+calmMusic.src = "sounds/calmMusic.wav";
+
+function handleMusic(){
+    /*if(!calmMusic.play()){
+        calmMusic.play();
+    }*/
+    calmMusic.play();
+    calmMusic.loop = true;
 }
 
+//UI/UX
 let staticBackground = new Image();
 staticBackground.src = 'images/backgroundStatic.jpg';
 let livesImage = new Image();
 livesImage.src = 'images/Herz.svg';
+let message = 0;
+let difficultyIncrease = false;
 
 function handleScore(){
     score++;
     if(score > Math.max(...highScore)){
         highScore[0] = score;
+    }
+    if(score == 5){
+        difficultyIncrease = true;
+        message = gameFrame + 150;
+        calmMusic.muted = true;
+    }
+}
+
+function handleDifficulty(){
+    if(message > gameFrame){
+        ctx.fillStyle = 'red';
+        ctx.font = '60px Georgia';
+        ctx.fillText("DIFFICULTY INCREASED", 250, 300);
     }
 }
 
@@ -410,7 +414,13 @@ function instructions(){
         ctx.fillStyle = 'black';
         ctx.fillText("Collect as many bubbles as possible", 200, 300);
         ctx.fillText("(Careful of other fish!)", 315, 350);
-    } else {
+    } else if(difficultyIncrease){
+        ctx.fillStyle = 'red';
+        ctx.font = '80px Georgia';
+        ctx.fillText(score, 500, 175);
+    } else{
+        ctx.fillStyle = 'white';
+        ctx.font = '60px Georgia';
         ctx.fillText(score, 500, 175);
     }
 }
@@ -462,8 +472,10 @@ function handlePlayerBlink(){
     }
 }
 
+//End game features
 function handleGameOver(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    calmMusic.muted = false;
     ctx.fillStyle = 'white';
     ctx.font = '80px Georgia';
     ctx.fillText('GAME OVER', 275, 150);
