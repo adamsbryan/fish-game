@@ -339,6 +339,7 @@ let purpleFish = document.getElementById("purple");
 let redFish = document.getElementById("red");
 let greenFish = document.getElementById("green");
 let blueFish = document.getElementById("blue");
+let colorArray = [blackFish, yellowFish, purpleFish, redFish, greenFish, blueFish];
 
 blackFish.addEventListener("click", handleBlackChoice);
 yellowFish.addEventListener("click", handleYellowChoice);
@@ -347,29 +348,49 @@ redFish.addEventListener("click", handleRedChoice);
 greenFish.addEventListener("click", handleGreenChoice);
 blueFish.addEventListener("click", handleBlueChoice);
 
+function removeBorder(colorArray, color){
+    for(let i=0; i < colorArray.length; i++){
+        if(i != color){
+            colorArray[i].style.border = "";
+        }
+    }
+}
+
 function handleBlackChoice(e){
     playerLeft.src = 'images/userModels/black_left.png';
     playerRight.src = 'images/userModels/black_right.png';
+    blackFish.style.border = "3px solid red";
+    removeBorder(colorArray, 0);
 }
 function handleYellowChoice(e){
     playerLeft.src = 'images/userModels/yellow_left.png';
     playerRight.src = 'images/userModels/yellow_right.png';
+    yellowFish.style.border = "3px solid red";
+    removeBorder(colorArray, 1);
 }
 function handlePurpleChoice(e){
     playerLeft.src = 'images/userModels/purple_left.png';
     playerRight.src = 'images/userModels/purple_right.png';
+    purpleFish.style.border = "3px solid red";
+    removeBorder(colorArray, 2);
 }
 function handleRedChoice(e){
     playerLeft.src = 'images/userModels/red_left.png';
     playerRight.src = 'images/userModels/red_right.png';
+    redFish.style.border = "3px solid red";
+    removeBorder(colorArray, 3);
 }
 function handleGreenChoice(e){
     playerLeft.src = 'images/userModels/green_left.png';
     playerRight.src = 'images/userModels/green_right.png';
+    greenFish.style.border = "3px solid red";
+    removeBorder(colorArray, 4);
 }
 function handleBlueChoice(e){
     playerLeft.src = 'images/userModels/blue_left.png';
     playerRight.src = 'images/userModels/blue_right.png';
+    blueFish.style.border = "3px solid red";
+    removeBorder(colorArray, 5);
 }
 
 let staticBackground = new Image();
@@ -385,7 +406,7 @@ function handleScore(){
 }
 
 function instructions(){
-    if(gameFrame < 500){
+    if(gameFrame < 400){
         ctx.fillStyle = 'black';
         ctx.fillText("Collect as many bubbles as possible", 200, 300);
         ctx.fillText("(Careful of other fish!)", 315, 350);
@@ -452,7 +473,7 @@ function handleGameOver(){
         ctx.fillText('NEW HIGH SCORE: ' + score, 300, 225)
     } else {
         ctx.fillStyle = 'black';
-        ctx.fillText('SCORE: ' + score, 415, 210);
+        ctx.fillText('SCORE: ' + score, 405, 210);
     }
     highScore.push(score);
 }
