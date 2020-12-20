@@ -73,7 +73,6 @@ class Player {
             ctx.lineTo(mouse.x, mouse.y);
             ctx.stroke();
         }
-        //ctx.closePath();
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle)
@@ -160,16 +159,6 @@ const movingBG = {
 
 } 
 
-function handleBackground(){
-    movingBG.x1 -= gameSpeed;
-    if(movingBG.x1 < -movingBG.width) movingBG.x1 = movingBG.width;
-    movingBG.x2 -= gameSpeed;
-    if(movingBG.x2 < -movingBG.width) movingBG.x2 = movingBG.width;
-    ctx.drawImage(background, movingBG.x1, movingBG.y, movingBG.width, movingBG.height);
-    ctx.drawImage(background, movingBG.x2, movingBG.y, movingBG.width, movingBG.height);
-
-}
-
 //Enemies
 const enemyImage1 = new Image();
 enemyImage1.src = 'images/enemy1.png';
@@ -210,9 +199,11 @@ class Enemy1{
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
             handleDamage();
-            this.x = canvas.width + 500;
-            this.y = Math.random() * (canvas.height - 90);
-            this.speed = Math.random() * 2 + 2;
+            if(player.lives > 0){
+                this.x = canvas.width + 500;
+                this.y = Math.random() * (canvas.height - 90);
+                this.speed = Math.random() * 2 + 2;
+            }
         }
     }
 }
@@ -251,9 +242,11 @@ class Enemy2{
         const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
         if(distance < this.radius + player.radius){
             handleDamage();
-            this.x = -500;
-            this.y = Math.random() * (canvas.height - 90);
-            this.speed = Math.random() * 2 + 2;
+            if(player.lives > 0){
+                this.x = -500;
+                this.y = Math.random() * (canvas.height - 90);
+                this.speed = Math.random() * 2 + 2;    
+            }
         }
     }
 }
@@ -273,28 +266,27 @@ function animate(){
     ctx.drawImage(staticBackground, 0, 0, 1000, 650);
     drawLives();
     handleBubbles();
-    //handleBackground();
-    instructions();
-    ctx.fillStyle = 'white';
-    ctx.font = '40px Georgia';
-    ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
-    player.draw();
-    player.update();
-    handleEnemies();
-    handlePlayerBlink();
-    handleDifficulty();
-    gameFrame++;
+    if(!player.lives){ gameOver = true; }
     if(!gameOver){
         requestAnimationFrame(animate);
     } else {
         handleGameOver();
-        playAgainButton.style.zIndex = '2';
-        settingsContainer.style.zIndex = '1';
-        resetToDefault();
+        handleEnemies();
+        drawEnemy3();
+        //TODO
+        //add player drowning animation during gameOver sound frames
+        return;
     }
-    if(!player.lives){
-        gameOver = true;
-    }
+    instructions();
+    ctx.fillStyle = 'white';
+    ctx.font = '40px Georgia';
+    ctx.fillText('BEST: ' + Math.max(...highScore), 10, 635);
+    handleDifficulty();
+    player.draw();
+    player.update();
+    handleEnemies();
+    handlePlayerBlink();
+    gameFrame++;
 }
 
 window.addEventListener('resize', function (){
@@ -374,6 +366,8 @@ const calmMusic = document.createElement("audio");
 calmMusic.src = "sounds/calmMusic.wav";
 const hardMusic = document.createElement("audio");
 hardMusic.src = "sounds/hardMode.wav";
+const loseMusic = document.createElement("audio");
+loseMusic.src = "sounds/loseGame.wav";
 
 function handleMusic(){
     calmMusic.play();
@@ -393,7 +387,7 @@ function handleScore(){
     if(score > Math.max(...highScore)){
         highScore[0] = score;
     }
-    if(score == 5){
+    if(score == 15){
         difficultyIncrease = true;
         message = gameFrame + 150;
         calmMusic.muted = true;
@@ -414,15 +408,19 @@ function handleDifficulty(){
         ctx.fillText("DIFFICULTY INCREASED", 200, 300);
     }
     if(difficultyIncrease){
-        enemy3.update();
         enemy3.speed = Math.random() * 5 + 2;
-        ctx.drawImage(enemyImage3, enemy3.frameX * enemy3.spriteWidth, enemy3.frameY * enemy3.spriteHeight, enemy3.spriteWidth, enemy3.spriteHeight, enemy3.x - 60, enemy3.y - 70, enemy3.spriteWidth / 3, enemy3.spriteHeight / 3)
+        drawEnemy3();
+        enemy3.update();
     }
 }
 
+function drawEnemy3(){
+    ctx.drawImage(enemyImage3, enemy3.frameX * enemy3.spriteWidth, enemy3.frameY * enemy3.spriteHeight, enemy3.spriteWidth, enemy3.spriteHeight, enemy3.x - 60, enemy3.y - 70, enemy3.spriteWidth / 3, enemy3.spriteHeight / 3);
+}
+
 function instructions(){
-    if(gameFrame < 400){
-        ctx.fillStyle = 'black';
+    if(gameFrame < 300){
+        ctx.fillStyle = 'white';
         ctx.fillText("Collect as many bubbles as possible", 200, 300);
         ctx.fillText("(Careful of other fish!)", 315, 350);
     } else if(difficultyIncrease){
@@ -458,9 +456,11 @@ damage.src = 'sounds/damage.flac';
 
 function handleDamage(){
     player.lives--;
-    damage.play();
-    ctx.fillStyle = 'red';
-    ctx.fillRect(0, 0, 1000, 650);
+    if(player.lives > 0){
+        damage.play();
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, 1000, 650);   
+    }
     gameFrameCatch = gameFrame;
     playerBlink = gameFrameCatch + 150;
 }
@@ -488,21 +488,28 @@ function handlePlayerBlink(){
 
 //End game features
 function handleGameOver(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    calmMusic.muted = false;
     hardMusic.muted = true;
-    ctx.fillStyle = 'white';
-    ctx.font = '80px Georgia';
-    ctx.fillText('GAME OVER', 275, 150);
-    ctx.font = '40px Georgia';
-    if(score >= Math.max(...highScore)){
-        ctx.fillStyle = 'magenta';
-        ctx.fillText('NEW HIGH SCORE: ' + score, 300, 225)
-    } else {
-        ctx.fillStyle = 'black';
-        ctx.fillText('SCORE: ' + score, 405, 210);
-    }
-    highScore.push(score);
+    loseMusic.play();
+    setTimeout(function(){ 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        calmMusic.muted = false;
+        ctx.fillStyle = 'white';
+        ctx.font = '80px Georgia';
+        ctx.fillText('GAME OVER', 275, 150);
+        ctx.font = '40px Georgia';
+        if(score >= Math.max(...highScore)){
+            ctx.fillStyle = 'magenta';
+            ctx.fillText('NEW HIGH SCORE: ' + score, 300, 225)
+        } else {
+            ctx.fillStyle = 'black';
+            ctx.fillText('SCORE: ' + score, 405, 210);
+        }
+        highScore.push(score);
+        playAgainButton.style.zIndex = '2';
+        settingsContainer.style.zIndex = '1';
+        resetToDefault(); 
+    }, 4300)  
+    
 }
 
 function resetToDefault(){
