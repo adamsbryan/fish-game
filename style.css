@@ -134,7 +134,6 @@ button::before {
       z-index: -5;
       width: 70%;
       height: 70%;
-      border: 5px solid green;
 }
   
 .settings-content{

@@ -67,11 +67,9 @@ class Player {
     }
     draw(){
         if(mouse.click){
-            ctx.lineWidth = 0.2;
             ctx.beginPath();
             ctx.moveTo(this.x, this.y);
             ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
         }
         ctx.save();
         ctx.translate(this.x, this.y);
@@ -387,7 +385,7 @@ function handleScore(){
     if(score > Math.max(...highScore)){
         highScore[0] = score;
     }
-    if(score == 15){
+    if(score == 20){
         difficultyIncrease = true;
         message = gameFrame + 150;
         calmMusic.muted = true;
@@ -405,12 +403,12 @@ function handleDifficulty(){
     if(message > gameFrame){
         ctx.fillStyle = 'red';
         ctx.font = '60px Georgia';
-        ctx.fillText("DIFFICULTY INCREASED", 200, 300);
+        ctx.fillText("DIFFICULTY INCREASED", 155, 325);
     }
     if(difficultyIncrease){
         enemy3.speed = Math.random() * 5 + 2;
-        drawEnemy3();
         enemy3.update();
+        drawEnemy3();
     }
 }
 
@@ -426,7 +424,7 @@ function instructions(){
     } else if(difficultyIncrease){
         ctx.fillStyle = 'red';
         ctx.font = '80px Georgia';
-        ctx.fillText(score, 500, 175);
+        ctx.fillText(score, 485, 175);
     } else{
         ctx.fillStyle = 'white';
         ctx.font = '60px Georgia';
@@ -480,9 +478,11 @@ function handlePlayerBlink(){
         //player invincibility
         enemy1.radius = -60;
         enemy2.radius = -60;
+        enemy3.radius = -60;
     } else {
         enemy1.radius = 60;
         enemy2.radius = 60;
+        enemy3.radius = 60;
     }
 }
 
@@ -530,5 +530,7 @@ function resetToDefault(){
     enemy2.x = -200;
     enemy2.y = Math.random() * (canvas.height - 90);
     enemy2.speed = Math.random() * 2 + 2;
+    enemy3.x = canvas.width + 200;
+    enemy3.y = Math.random() * (canvas.height - 90);
     bubblesArray = [];
 }
