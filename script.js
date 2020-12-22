@@ -271,6 +271,8 @@ function animate(){
         handleGameOver();
         handleEnemies();
         drawEnemy3();
+        player.draw();
+        player.update();
         //TODO
         //add player drowning animation during gameOver sound frames
         return;
