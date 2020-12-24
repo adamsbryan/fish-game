@@ -404,7 +404,7 @@ enemyImage3.src = 'images/enemy3.png';
 function handleDifficulty(){
     if(message > gameFrame){
         ctx.fillStyle = 'red';
-        ctx.font = '60px Georgia';
+        ctx.font = '60px VAGRoundedBold';
         ctx.fillText("DIFFICULTY INCREASED", 155, 325);
     }
     if(difficultyIncrease){
@@ -425,11 +425,11 @@ function instructions(){
         ctx.fillText("(Careful of other fish!)", 315, 350);
     } else if(difficultyIncrease){
         ctx.fillStyle = 'red';
-        ctx.font = '80px Georgia';
+        ctx.font = '80px VAGRoundedBold';
         ctx.fillText(score, 485, 175);
     } else{
         ctx.fillStyle = 'white';
-        ctx.font = '60px Georgia';
+        ctx.font = '60px VAGRoundedBold';
         ctx.fillText(score, 500, 175);
     }
 }
