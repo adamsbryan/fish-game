@@ -420,7 +420,7 @@ function drawEnemy3(){
 
 function instructions(){
     if(gameFrame < 300){
-        ctx.fillStyle = 'white';
+        ctx.fillStyle = 'Pink';
         ctx.fillText("Collect as many bubbles as possible", 200, 300);
         ctx.fillText("(Careful of other fish!)", 315, 350);
     } else if(difficultyIncrease){
