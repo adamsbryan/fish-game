@@ -83,6 +83,29 @@ class Player {
         }
         ctx.restore();
     }
+    handlePlayerBlink(){
+        if(gameFrame < playerBlink){
+            if(gameFrame < gameFrameCatch){
+                this.frameX = -1;
+                this.frameY = -1;
+            } else {
+                this.frameX = 1;
+                this.frameY = 1;
+            }
+            if(gameFrame > gameFrameCatch + 10){
+                gameFrameCatch += 20;
+            }
+            //player invincibility
+            enemy1.radius = -60;
+            enemy2.radius = -60;
+            enemy3.radius = -60;
+        } else {
+            enemy1.radius = 60;
+            enemy2.radius = 60;
+            enemy3.radius = 60;
+        }
+    }
+
 }
 
 const player = new Player();
@@ -285,7 +308,7 @@ function animate(){
     player.draw();
     player.update();
     handleEnemies();
-    handlePlayerBlink();
+    player.handlePlayerBlink();
     gameFrame++;
 }
 
@@ -296,6 +319,8 @@ window.addEventListener('resize', function (){
 /////////////////////////////////////////////////////////////////////
 //tutorial completed above --- self added features below
 
+let playerBlink = 0;
+let gameFrameCatch = 0;
 let highScore = [0];
 
 //Buttons
@@ -449,8 +474,6 @@ function drawLives(){
     }
 }
 
-let playerBlink = 0;
-let gameFrameCatch = 0;
 let damage = document.createElement("audio");
 damage.src = 'sounds/damage.flac';
 
@@ -463,29 +486,6 @@ function handleDamage(){
     }
     gameFrameCatch = gameFrame;
     playerBlink = gameFrameCatch + 150;
-}
-
-function handlePlayerBlink(){
-    if(gameFrame < playerBlink){
-        if(gameFrame < gameFrameCatch){
-            player.frameX = -1;
-            player.frameY = -1;
-        } else {
-            player.frameX = 1;
-            player.frameY = 1;
-        }
-        if(gameFrame > gameFrameCatch + 10){
-            gameFrameCatch += 20;
-        }
-        //player invincibility
-        enemy1.radius = -60;
-        enemy2.radius = -60;
-        enemy3.radius = -60;
-    } else {
-        enemy1.radius = 60;
-        enemy2.radius = 60;
-        enemy3.radius = 60;
-    }
 }
 
 //End game features
